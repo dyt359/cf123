@@ -610,6 +610,11 @@ function 解析地址值端口(输入) {
 export default {
   async fetch(请求735, 本地值734, 本地值733) {
     try {
+
+	  const 请求网址拦截 = new URL(请求735.url);
+      if (请求网址拦截.hostname.endsWith('.pages.dev')) {
+        return new Response('Not Found', { status: 404 });
+      }
       const 是否网页套接字 = 请求735.headers.get('Upgrade') === atob('d2Vic29ja2V0');
       const 是否值732 = 请求735.method === 'POST';
       const 请求网址731 = new URL(请求735.url);
