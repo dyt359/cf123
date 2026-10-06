@@ -613,6 +613,14 @@ function 解析地址值端口(输入) {
 }
 export default {
   async fetch(请求735, 本地值734, 本地值733) {
+    // === 傻瓜缓存开始 ===
+    if (请求735.method === 'GET' && !请求735.url.includes('/api/')) {
+      const 缓存 = caches.default;
+      const 缓存键 = new Request(请求735.url, 请求735);
+      let 缓存响应 = await 缓存.match(缓存键);
+      if (缓存响应) return 缓存响应;
+    }
+    // === 傻瓜缓存结束 ===
     try {
       const 是否网页套接字 = 请求735.headers.get('Upgrade') === atob('d2Vic29ja2V0');
       const 是否值732 = 请求735.method === 'POST';

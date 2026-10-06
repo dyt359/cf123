@@ -1,9 +1,9 @@
 name: 从 cfnew 同步 Releases
 
 on:
-  workflow_dispatch:  # 手动触发
-  schedule:
-    - cron: '0 */6 * * *'  # 每6小时自动检查一次
+  workflow_dispatch:  # 手动触发（已取消 schedule 定时同步，防止本地缓存补丁被覆盖）
+# schedule:            # ← 已停用：原作者 Releases 自动同步会覆盖 _worker.js 的本地补丁
+#   - cron: '0 */6 * * *'
 
 jobs:
   sync-release:
