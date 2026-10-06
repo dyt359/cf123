@@ -1,0 +1,359 @@
+/* ==========================================================================
+   cf123 前端 —— 订阅获取面板
+   设计令牌严格遵循《UI 规范 v3.1》：
+     - 间距只用刻度 --space-4/6/8/12/16/20/24/32
+     - 圆角只用 --radius-sm(8) / md(12) / lg(20) / pill(999)
+     - 字号只用 --fs-11/12/12-5/13/14/15/16/17/20
+     - 文字色 --text(正文) 与 --text-strong(标题/强调) 语义分立，不合并
+     - 状态提示按规范第⑤段：服务状态用「圆点 + 文字」
+   ========================================================================== */
+
+:root {
+  /* 字体栈 */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* 圆角 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  /* 间距（只允许这些刻度） */
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+
+  /* 字号 */
+  --fs-11: 11px;
+  --fs-12: 12px;
+  --fs-12-5: 12.5px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-15: 15px;
+  --fs-16: 16px;
+  --fs-17: 17px;
+  --fs-20: 20px;
+
+  /* 行高 */
+  --lh-tight: 1.4;
+  --lh-normal: 1.6;
+  --lh-loose: 1.75;
+
+  /* 语义色（浅色为默认，深色跟随系统） */
+  --bg: #EBE9E5;
+  --bg-elevated: #F5F3EF;
+  --bg-subtle: #E4E2DD;
+  --text: #1d1d1f;
+  --text-strong: #1d1d1f;
+  --text-muted: #9a9a94;
+  --accent: #007aff;
+  --success: #5C8A5C;
+  --warning: #B87333;
+  --danger: #c8231a;
+  --btn-primary-bg: #4A443C;
+  --btn-primary-text: #F5F3EF;
+  --btn-primary-hover: #3A352E;
+  --border: #D6D2C7;
+  --input-bg: rgba(74, 68, 60, 0.045);
+  --input-bg-focus: rgba(74, 68, 60, 0.075);
+  --modal-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
+
+  /* 规范①：surface-3/4 编号为历史命名，与层级/深浅顺序无关。
+     surface-3 = 分类标签底（更深），surface-4 = 内容标签底（更浅）。*/
+  --surface-3: #DEDBD4;
+  --surface-4: #E6E4DE;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #18181a;
+    --bg-elevated: #1c1c1e;
+    --bg-subtle: #2c2c2e;
+    --text: #f5f5f7;
+    --text-strong: #f5f5f7;
+    --text-muted: #9a9a94;
+    --accent: #0a84ff;
+    --success: #7DA87D;
+    --warning: #D18A5C;
+    --danger: #ff6961;
+    --btn-primary-bg: #5A534A;
+    --btn-primary-text: #F5F3EF;
+    --btn-primary-hover: #4A443C;
+    --border: rgba(255, 255, 255, 0.16);
+    --input-bg: rgba(255, 255, 255, 0.06);
+    --input-bg-focus: rgba(255, 255, 255, 0.10);
+    --modal-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+    --surface-3: #3a3a3c;
+    --surface-4: #2c2c2e;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: var(--space-32) var(--space-20);
+  font-family: var(--font-sans);
+  font-size: var(--fs-14);
+  line-height: var(--lh-normal);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ---------- 头部 ---------- */
+.head {
+  margin-bottom: var(--space-32);
+}
+
+.head h1 {
+  margin: 0 0 var(--space-8);
+  font-size: var(--fs-20);
+  line-height: var(--lh-tight);
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.head p {
+  margin: 0;
+  font-size: var(--fs-13);
+  color: var(--text-muted);
+}
+
+/* ---------- 卡片 ---------- */
+.card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-24);
+  box-shadow: var(--modal-shadow);
+}
+
+.card + .card {
+  margin-top: var(--space-16);
+}
+
+.card h2 {
+  margin: 0 0 var(--space-16);
+  font-size: var(--fs-15);
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+/* ---------- 表单 ---------- */
+.field {
+  margin-bottom: var(--space-16);
+}
+
+.field:last-child {
+  margin-bottom: 0;
+}
+
+label {
+  display: block;
+  margin-bottom: var(--space-6);
+  font-size: var(--fs-12-5);
+  font-weight: 500;
+  color: var(--text-strong);
+}
+
+.hint {
+  margin-top: var(--space-6);
+  font-size: var(--fs-11);
+  color: var(--text-muted);
+}
+
+input[type='text'] {
+  width: 100%;
+  padding: var(--space-12) var(--space-16);
+  font-family: var(--font-mono);
+  font-size: var(--fs-13);
+  color: var(--text);
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+input[type='text']::placeholder {
+  color: var(--text-muted);
+}
+
+input[type='text']:focus {
+  background: var(--input-bg-focus);
+  border-color: var(--accent);
+}
+
+input[type='text']:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---------- 按钮 ---------- */
+.btn {
+  display: block;
+  width: 100%;
+  padding: var(--space-12) var(--space-16);
+  font-family: var(--font-sans);
+  font-size: var(--fs-14);
+  font-weight: 600;
+  color: var(--btn-primary-text);
+  background: var(--btn-primary-bg);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--btn-primary-hover);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-row {
+  display: flex;
+  gap: var(--space-8);
+}
+
+.btn-row .btn {
+  flex: 1;
+}
+
+.btn-ghost {
+  color: var(--text-strong);
+  background: transparent;
+  border: 1px solid var(--border);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--input-bg);
+}
+
+/* ---------- 状态区（规范⑤：服务状态用「圆点 + 文字」） ---------- */
+.status-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  font-size: var(--fs-13);
+}
+
+.status-label {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* 状态值：圆点 + 文字 */
+.status-value {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-6);
+  font-weight: 500;
+  color: var(--text-strong);
+  text-align: right;
+  word-break: break-all;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.dot.ok {
+  background: var(--success);
+}
+
+.dot.warn {
+  background: var(--warning);
+}
+
+.dot.err {
+  background: var(--danger);
+}
+
+/* ---------- 标签（规范①：surface-3 分类标签 / surface-4 内容标签） ---------- */
+.tag {
+  display: inline-block;
+  padding: var(--space-4) var(--space-12);
+  font-size: var(--fs-11);
+  font-weight: 500;
+  border-radius: var(--radius-pill);
+}
+
+.tag.cat {
+  background: var(--surface-3);
+  color: var(--text-strong);
+}
+
+.tag.content {
+  background: var(--surface-4);
+  color: var(--text);
+}
+
+/* ---------- 订阅结果 ---------- */
+.result {
+  margin-top: var(--space-16);
+  padding: var(--space-12) var(--space-16);
+  background: var(--surface-4);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  line-height: var(--lh-normal);
+  color: var(--text);
+  word-break: break-all;
+}
+
+.result[hidden] {
+  display: none;
+}
+
+/* ---------- 提示条 ---------- */
+.notice {
+  margin-top: var(--space-12);
+  font-size: var(--fs-12);
+  line-height: var(--lh-normal);
+  color: var(--text-muted);
+}
+
+.notice.err {
+  color: var(--danger);
+}
+
+.notice[hidden] {
+  display: none;
+}
+
+.foot {
+  margin-top: var(--space-24);
+  font-size: var(--fs-11);
+  line-height: var(--lh-loose);
+  color: var(--text-muted);
+  text-align: center;
+}

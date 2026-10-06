@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>订阅获取</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="wrap">
+    <header class="head">
+      <h1>订阅获取</h1>
+      <p>输入你的 UUID 或自定义路径，生成订阅链接。</p>
+    </header>
+
+    <!-- 配置区 -->
+    <section class="card">
+      <h2>配置</h2>
+
+      <div class="field">
+        <label for="backend">后端地址</label>
+        <input type="text" id="backend" placeholder="https://cf123-1ju.pages.dev" spellcheck="false"
+          autocomplete="off">
+        <p class="hint">Worker 部署地址，留空使用下方默认值。</p>
+      </div>
+
+      <div class="field">
+        <label for="uuid">UUID / 自定义路径</label>
+        <input type="text" id="uuid" placeholder="351c9981-04b6-4103-aa4b-864aa9c91469" spellcheck="false"
+          autocomplete="off">
+        <p class="hint">订阅地址为「后端地址 + /你的UUID + /sub」。</p>
+      </div>
+    </section>
+
+    <!-- 操作区 -->
+    <section class="card">
+      <h2>获取订阅</h2>
+      <button class="btn" id="btnSub" type="button">获取订阅链接</button>
+      <div class="btn-row" style="margin-top: var(--space-8);">
+        <button class="btn btn-ghost" id="btnRegion" type="button">查询节点地区</button>
+        <button class="btn btn-ghost" id="btnPing" type="button">测试连接</button>
+      </div>
+      <p class="notice" id="notice" hidden></p>
+      <div class="result" id="result" hidden></div>
+    </section>
+
+    <!-- 状态区 -->
+    <section class="card">
+      <h2>状态</h2>
+      <div class="status-list">
+        <div class="status-row">
+          <span class="status-label">后端连接</span>
+          <span class="status-value"><span class="dot" id="dotConn"></span><span id="txtConn">未检测</span></span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">当前节点地区</span>
+          <span class="status-value"><span class="dot" id="dotRegion"></span><span id="txtRegion">未知</span></span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">响应延迟</span>
+          <span class="status-value"><span id="txtLatency">—</span></span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">后端版本</span>
+          <span class="status-value"><span class="tag cat" id="tagVer">—</span></span>
+        </div>
+      </div>
+    </section>
+
+    <p class="foot">
+      前端为静态页面，可独立托管到 Cloudflare Pages；后端仅提供 JSON / 订阅接口。
+    </p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
