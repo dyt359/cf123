@@ -4,70 +4,275 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>订阅获取</title>
+  <title>cf123 控制台</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
   <div class="wrap">
     <header class="head">
-      <h1>订阅获取</h1>
-      <p>输入你的 UUID 或自定义路径，生成订阅链接。</p>
+      <h1>cf123 控制台</h1>
+      <p>订阅获取与 Worker 配置管理。</p>
     </header>
 
-    <!-- 配置区 -->
-    <section class="card">
-      <h2>配置</h2>
+    <!-- Tab 切换 -->
+    <nav class="tabs" role="tablist">
+      <button class="tab active" id="tabSub" role="tab" aria-selected="true" aria-controls="panelSub"
+        type="button">订阅获取</button>
+      <button class="tab" id="tabConfig" role="tab" aria-selected="false" aria-controls="panelConfig" type="button">配置管理</button>
+    </nav>
 
-      <div class="field">
-        <label for="backend">后端地址</label>
-        <input type="text" id="backend" placeholder="https://cf123-1ju.pages.dev" spellcheck="false"
-          autocomplete="off">
-        <p class="hint">Worker 部署地址，留空使用下方默认值。</p>
-      </div>
+    <!-- ==================== Tab 1：订阅获取 ==================== -->
+    <div class="tab-panel" id="panelSub" role="tabpanel" aria-labelledby="tabSub">
+      <section class="card">
+        <h2>配置</h2>
 
-      <div class="field">
-        <label for="uuid">UUID / 自定义路径</label>
-        <input type="text" id="uuid" placeholder="351c9981-04b6-4103-aa4b-864aa9c91469" spellcheck="false"
-          autocomplete="off">
-        <p class="hint">订阅地址为「后端地址 + /你的UUID + /sub」。</p>
-      </div>
-    </section>
+        <div class="field">
+          <label for="backend">后端地址</label>
+          <input type="text" id="backend" placeholder="https://cf123-1ju.pages.dev" spellcheck="false"
+            autocomplete="off">
+          <small class="hint">Worker 部署地址，留空使用下方默认值。该地址会记入浏览器本地存储。</small>
+        </div>
 
-    <!-- 操作区 -->
-    <section class="card">
-      <h2>获取订阅</h2>
-      <button class="btn" id="btnSub" type="button">获取订阅链接</button>
-      <div class="btn-row" style="margin-top: var(--space-8);">
-        <button class="btn btn-ghost" id="btnRegion" type="button">查询节点地区</button>
-        <button class="btn btn-ghost" id="btnPing" type="button">测试连接</button>
-      </div>
-      <p class="notice" id="notice" hidden></p>
-      <div class="result" id="result" hidden></div>
-    </section>
+        <div class="field">
+          <label for="uuid">UUID / 自定义路径</label>
+          <input type="text" id="uuid" placeholder="351c9981-04b6-4103-aa4b-864aa9c91469" spellcheck="false"
+            autocomplete="off">
+          <small class="hint">订阅地址为「后端地址 + /你的UUID + /sub」。若你在配置管理中设置了自定义路径，这里填自定义路径。</small>
+        </div>
+      </section>
 
-    <!-- 状态区 -->
-    <section class="card">
-      <h2>状态</h2>
-      <div class="status-list">
-        <div class="status-row">
-          <span class="status-label">后端连接</span>
-          <span class="status-value"><span class="dot" id="dotConn"></span><span id="txtConn">未检测</span></span>
+      <section class="card">
+        <h2>获取订阅</h2>
+        <button class="btn" id="btnSub" type="button">获取订阅链接</button>
+        <div class="btn-row" style="margin-top: var(--space-8);">
+          <button class="btn btn-ghost" id="btnRegion" type="button">查询节点地区</button>
+          <button class="btn btn-ghost" id="btnPing" type="button">测试连接</button>
         </div>
-        <div class="status-row">
-          <span class="status-label">当前节点地区</span>
-          <span class="status-value"><span class="dot" id="dotRegion"></span><span id="txtRegion">未知</span></span>
+        <p class="notice" id="notice" hidden></p>
+        <div class="result" id="result" hidden></div>
+      </section>
+
+      <section class="card">
+        <h2>状态</h2>
+        <div class="status-list">
+          <div class="status-row">
+            <span class="status-label">后端连接</span>
+            <span class="status-value"><span class="dot" id="dotConn"></span><span id="txtConn">未检测</span></span>
+          </div>
+          <div class="status-row">
+            <span class="status-label">当前节点地区</span>
+            <span class="status-value"><span class="dot" id="dotRegion"></span><span id="txtRegion">未知</span></span>
+          </div>
+          <div class="status-row">
+            <span class="status-label">响应延迟</span>
+            <span class="status-value"><span id="txtLatency">—</span></span>
+          </div>
+          <div class="status-row">
+            <span class="status-label">后端状态</span>
+            <span class="status-value"><span class="tag cat" id="tagVer">—</span></span>
+          </div>
         </div>
-        <div class="status-row">
-          <span class="status-label">响应延迟</span>
-          <span class="status-value"><span id="txtLatency">—</span></span>
+      </section>
+    </div>
+
+    <!-- ==================== Tab 2：配置管理 ==================== -->
+    <div class="tab-panel" id="panelConfig" role="tabpanel" aria-labelledby="tabConfig" hidden>
+      <section class="card">
+        <h2>协议选择</h2>
+        <p class="card-desc">决定订阅里生成哪些类型的节点。三者至少需启用一个，否则会自动回退到 VLESS。</p>
+
+        <div class="switch-row">
+          <div class="switch-text">
+            <label for="cfgEv">启用 VLESS（ev）</label>
+            <small class="hint">基础节点，建议保持开启。</small>
+          </div>
+          <span class="switch">
+            <input type="checkbox" id="cfgEv" data-key="ev" data-type="bool">
+            <span class="track"></span><span class="thumb"></span>
+          </span>
         </div>
-        <div class="status-row">
-          <span class="status-label">后端版本</span>
-          <span class="status-value"><span class="tag cat" id="tagVer">—</span></span>
+
+        <div class="switch-row">
+          <div class="switch-text">
+            <label for="cfgEt">启用 Trojan（et）</label>
+            <small class="hint">需要 SHA224 计算，会比较消耗 CPU，不建议开启。</small>
+          </div>
+          <span class="switch">
+            <input type="checkbox" id="cfgEt" data-key="et" data-type="bool">
+            <span class="track"></span><span class="thumb"></span>
+          </span>
         </div>
-      </div>
-    </section>
+
+        <div class="switch-row">
+          <div class="switch-text">
+            <label for="cfgEx">启用 xhttp（ex）</label>
+            <small class="hint">实验性协议，开启后会略微增加 CPU 消耗。</small>
+          </div>
+          <span class="switch">
+            <input type="checkbox" id="cfgEx" data-key="ex" data-type="bool">
+            <span class="track"></span><span class="thumb"></span>
+          </span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>基础自定义</h2>
+
+        <div class="field">
+          <label for="cfgD">自定义路径（d）</label>
+          <input type="text" id="cfgD" data-key="d" placeholder="留空使用 UUID" spellcheck="false" autocomplete="off">
+          <small class="hint">例如 /mypath 或留空使用 UUID。设置后可用它替换 UUID 访问全部接口。</small>
+        </div>
+
+        <div class="field">
+          <label for="cfgP">自定义IP（p）</label>
+          <input type="text" id="cfgP" data-key="p" placeholder="留空则使用默认地址" spellcheck="false" autocomplete="off">
+          <small class="hint">用于指定回退地址或 ProxyIP，格式 IP:端口。留空时使用内置地址池。</small>
+        </div>
+
+        <div class="field">
+          <label for="cfgYx">优选IP（yx）</label>
+          <input type="text" id="cfgYx" data-key="yx" placeholder="IP:端口#节点名" spellcheck="false" autocomplete="off">
+          <small class="hint">格式：IP:端口#节点名，多个用逗号分隔。也可在下方「延迟测试与优选管理」中自动生成。</small>
+        </div>
+
+        <div class="field">
+          <label for="cfgYxUrl">优选IP来源URL（yxURL）</label>
+          <input type="text" id="cfgYxUrl" data-key="yxURL" placeholder="留空则使用默认地址" spellcheck="false"
+            autocomplete="off">
+          <small class="hint">自动从URL拉取优选IP，留空则使用默认地址。填写的地址需返回可解析的 IP 列表。</small>
+        </div>
+
+        <div class="field">
+          <label for="cfgS">Socks5代理（s）</label>
+          <input type="text" id="cfgS" data-key="s" placeholder="user:pass@host:port" spellcheck="false" autocomplete="off">
+          <small class="hint">格式：user:pass@host:port 或 http://user:pass@host:port。留空则不使用代理。</small>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>ECH 与高级网络</h2>
+
+        <div class="switch-row">
+          <div class="switch-text">
+            <label for="cfgEch">启用 ECH（ech）</label>
+            <small class="hint">加密客户端问候，开启后会强制仅走 TLS 节点。</small>
+          </div>
+          <span class="switch">
+            <input type="checkbox" id="cfgEch" data-key="ech" data-type="bool">
+            <span class="track"></span><span class="thumb"></span>
+          </span>
+        </div>
+
+        <div class="field" style="margin-top: var(--space-20);">
+          <label for="cfgCustomDns">自定义 DNS（customDNS）</label>
+          <input type="text" id="cfgCustomDns" data-key="customDNS" placeholder="https://223.5.5.5/dns-query"
+            spellcheck="false" autocomplete="off">
+          <small class="hint">用于 ECH 配置查询，格式：https://223.5.5.5/dns-query。需为支持 DoH 的地址。</small>
+        </div>
+
+        <div class="field">
+          <label for="cfgEchDomain">自定义 ECH 域名（customECHDomain）</label>
+          <input type="text" id="cfgEchDomain" data-key="customECHDomain" placeholder="cloudflare-ech.com" spellcheck="false"
+            autocomplete="off">
+          <small class="hint">默认为 cloudflare-ech.com。用于 ECH 加密握手的域名，影响 CDN 资源可达性。</small>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>控制开关</h2>
+
+        <div class="field">
+          <label for="cfgYxby">优选控制（yxby）</label>
+          <select id="cfgYxby" data-key="yxby">
+            <option value="">默认（启用优选）</option>
+            <option value="yes">关闭优选</option>
+          </select>
+          <small class="hint">关闭优选后只用原生地址，不再使用优选 IP 列表。</small>
+        </div>
+
+        <div class="field">
+          <label for="cfgRm">地区匹配（rm）</label>
+          <select id="cfgRm" data-key="rm">
+            <option value="">默认（启用匹配）</option>
+            <option value="no">关闭匹配</option>
+          </select>
+          <small class="hint">关闭后不进行地区智能匹配，直接使用默认节点。</small>
+        </div>
+
+        <div class="field">
+          <label for="cfgQj">降级控制（qj）</label>
+          <select id="cfgQj" data-key="qj">
+            <option value="">优先代理</option>
+            <option value="no">优先直连</option>
+            <option value="only">只走代理</option>
+          </select>
+          <small class="hint">控制代理与直连的回落逻辑：「只走代理」时代理失败会直接报错而非回落。</small>
+        </div>
+
+        <div class="field">
+          <label for="cfgDkby">TLS控制（dkby）</label>
+          <select id="cfgDkby" data-key="dkby">
+            <option value="no">保留所有节点</option>
+            <option value="yes">仅TLS节点</option>
+          </select>
+          <small class="hint">开启后只生成带TLS的节点。启用 ECH 时该项会被强制为「仅TLS节点」。</small>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>延迟测试与优选管理</h2>
+        <p class="card-desc">在浏览器中直接向目标节点发起请求测速（8 秒超时），结果可覆盖或追加到优选列表。</p>
+
+        <div class="field">
+          <label for="testInput">待测地址</label>
+          <input type="text" id="testInput" placeholder="每行一个 IP 或域名，如 104.16.0.1" spellcheck="false"
+            autocomplete="off">
+          <small class="hint">每行一个地址，支持 IP 或域名。可直接粘贴从优选IP来源URL获取的列表。</small>
+        </div>
+
+        <div class="field">
+          <label for="testPort">测试端口</label>
+          <input type="text" id="testPort" value="443" spellcheck="false" autocomplete="off">
+          <small class="hint">默认 443。需与节点实际服务端口一致，否则测速结果不具参考性。</small>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn" id="btnTest" type="button">开始测试</button>
+          <button class="btn btn-ghost" id="btnStop" type="button" disabled>停止</button>
+        </div>
+
+        <div class="progress" id="progress" hidden>
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <p class="notice" id="testNotice" hidden></p>
+
+        <div class="result-list" id="testResults" hidden>
+          <div class="result-head">
+            <span class="c-addr">地址</span>
+            <span class="c-lat">延迟</span>
+            <span class="c-act"></span>
+          </div>
+          <div id="testResultBody"></div>
+        </div>
+
+        <div class="btn-row" style="margin-top: var(--space-12);">
+          <button class="btn btn-ghost btn-sm" id="btnOverwrite" type="button" disabled>覆盖添加到优选列表</button>
+          <button class="btn btn-ghost btn-sm" id="btnAppend" type="button" disabled>追加到优选列表</button>
+        </div>
+        <small class="hint">「覆盖」会清空原优选列表后写入本次测试成功的地址；「追加」只新增，不删除已有条目。</small>
+      </section>
+
+      <section class="card">
+        <h2>保存</h2>
+        <div class="btn-row">
+          <button class="btn" id="btnLoad" type="button">加载配置</button>
+          <button class="btn" id="btnSave" type="button">保存配置</button>
+        </div>
+        <p class="notice" id="cfgNotice" hidden></p>
+      </section>
+    </div>
 
     <p class="foot">
       前端为静态页面，可独立托管到 Cloudflare Pages；后端仅提供 JSON / 订阅接口。

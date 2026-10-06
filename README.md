@@ -18,11 +18,24 @@
 
 `docs/` 目录是独立的静态前端（纯 HTML/CSS/JS，无构建步骤），UI 遵循《UI 规范 v3.1》：
 
-- `docs/index.html` —— 页面结构
+- `docs/index.html` —— 页面结构（两个 Tab：订阅获取 / 配置管理）
 - `docs/style.css` —— 设计令牌（颜色/间距/圆角/字号）
 - `docs/app.js` —— fetch 交互逻辑
 
 部署到 Cloudflare Pages 时，将 `docs/` 作为静态目录即可。页面内可自行填写后端 Worker 地址（默认 `https://cf123-1ju.pages.dev`），地址会存入 `localStorage`。
+
+**配置管理**支持的字段（键名与后端 `配置默认值` 一致）：
+
+| 分组 | 字段 |
+|---|---|
+| 协议选择 | `ev` VLESS、`et` Trojan、`ex` xhttp |
+| 基础自定义 | `d` 自定义路径、`p` 自定义IP、`yx` 优选IP、`yxURL` 优选来源、`s` Socks5代理 |
+| ECH / 高级 | `ech`、`customDNS`、`customECHDomain` |
+| 控制开关 | `yxby` 优选控制、`rm` 地区匹配、`qj` 降级控制、`dkby` TLS控制 |
+
+每个设置项下方均有中文注释说明其作用、格式与注意事项。
+
+**延迟测试**在浏览器端直连 `*.nip.lfree.org` 测速（8 秒超时、5 并发），结果可**覆盖**或**追加**到优选列表（写入 `yx` 字段），确认后点「保存配置」提交。注意 `GET/POST /api/preferred-ips` 需后端开启 `ae`（允许API管理）才可用，否则该接口返回 403。
 
 > **⚠️ 自动同步已停用**
 > `.github/workflows/sync-from-cfnew.yml` 中的 cron 定时同步已注释掉，防止原作者 Releases 覆盖本仓库的前后端分离改动与缓存补丁。该工作流仍可手动触发；**若手动同步，请重新检查根路径是否退回了 HTML 页面、以及「傻瓜缓存」代码是否被覆盖**。
